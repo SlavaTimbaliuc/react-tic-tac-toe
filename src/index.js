@@ -35,16 +35,18 @@ class Board extends React.Component {
     }
 
     render() {
-        let indexes = [0, 3, 6];
+        let rows = [0, 3, 6];
+        let columns = [0, 1, 2];
         return (
             <div>
-                {
-                    indexes.map((index) => {
+                {rows.map((row) => {
                         return (
-                            <div key={index} className="board-row">
-                                {this.renderSquare(index)}
-                                {this.renderSquare(index+1)}
-                                {this.renderSquare(index+2)}
+                            <div key={row} className="board-row">
+                                {
+                                    columns.map((col) => {
+                                        return this.renderSquare(row+col)
+                                    })
+                                }
                             </div>
                         )
                     })
