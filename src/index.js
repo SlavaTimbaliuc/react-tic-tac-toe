@@ -174,7 +174,7 @@ function allSquaresFilled(squares) {
 }
 
 function convertIndexToRowCol(index) {
-    if (index !== null) {
+    if (index === null) {
         return null
     }
     const mapping = [
