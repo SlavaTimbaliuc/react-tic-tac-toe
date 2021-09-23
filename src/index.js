@@ -21,7 +21,7 @@ class Board extends React.Component {
     renderSquare(i) {
         let bold = false;
         if (this.props.lines) {
-            if (this.props.lines[0] == i || this.props.lines[1] == i || this.props.lines[2] == i) {
+            if (this.props.lines[0] === i || this.props.lines[1] === i || this.props.lines[2] === i) {
                 bold = true
             }
         }
@@ -62,6 +62,7 @@ class Game extends React.Component {
         this.state = {
             history: [{
                 squares: Array(9).fill(null),
+                indexPressed: null,
             }],
             stepNumber: 0,
             xIsNext: true,
@@ -92,7 +93,8 @@ class Game extends React.Component {
         squares[i] = this.state.xIsNext ? 'X' : 'O';
         this.setState({
             history: history.concat([{
-                squares: squares
+                squares: squares,
+                indexPressed: i,
             }]),
             stepNumber: history.length,
             xIsNext: !this.state.xIsNext,
@@ -104,16 +106,20 @@ class Game extends React.Component {
         const current = history[this.state.stepNumber];
         const winnerObj = calculateWinner(current.squares);
 
-        let moves = history.map((squares, move) => {
-            const desc = move ?
-                "Go to move #" + move :
+        let moves = history.map((historyObject, index) => {
+            let desc = index ?
+                "Go to move #" + index :
                 "Go to Game Start";
-            let button = <button onClick={() => this.jumpTo(move)}>{desc}</button>
-            if (move == this.state.stepNumber) {
-                button = <button onClick={() => this.jumpTo(move)}><b>{desc}</b></button>
+            let info = convertIndexToRowCol(historyObject.indexPressed);
+            if (info != null) {
+                desc = desc + " (row: " + info.row + " col: " + info.col + ")";
+            }
+            let button = <button onClick={() => this.jumpTo(index)}>{desc}</button>
+            if (index === this.state.stepNumber) {
+                button = <button onClick={() => this.jumpTo(index)}><b>{desc}</b></button>
             }
             return (
-                <li key={move}>
+                <li key={index}>
                     {button}
                 </li>
             )
@@ -122,7 +128,7 @@ class Game extends React.Component {
         let status;
         if (winnerObj) {
             status = 'Winner ' + winnerObj.winner;
-        } else if (allSquaresFilled(current.squares) && this.state.stepNumber != 0) {
+        } else if (allSquaresFilled(current.squares) && this.state.stepNumber !== 0) {
             status = 'Draw'
         } else {
             status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
@@ -167,6 +173,24 @@ function allSquaresFilled(squares) {
     return true;
 }
 
+function convertIndexToRowCol(index) {
+    if (index !== null) {
+        return null
+    }
+    const mapping = [
+        {row: 0, col: 0}, // 0
+        {row: 0, col: 1}, // 1
+        {row: 0, col: 2}, // 2
+        {row: 1, col: 0}, // 3
+        {row: 1, col: 1}, // 4
+        {row: 1, col: 2}, // 5
+        {row: 2, col: 0}, // 6
+        {row: 2, col: 1}, // 7
+        {row: 2, col: 2}, // 8
+    ]
+    return mapping[index];
+}
+ 
 function calculateWinner(squares) {
     const lines = [
         [0, 1, 2],
