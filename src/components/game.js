@@ -4,7 +4,7 @@ import {
     convertIndexToRowCol, 
     calculateWinner, 
     allSquaresFilled,
-} from './utils'
+} from '../utils/utils'
 import { Board } from './board'
 
 export class Game extends React.Component {
